@@ -1,10 +1,6 @@
 ﻿using FsCheck;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FsCheck.Fluent;
+using System;
 using WalletPropertyTesting.Domain;
 
 namespace WalletPropertyTesting.Tests.Arbitraries
@@ -13,9 +9,13 @@ namespace WalletPropertyTesting.Tests.Arbitraries
     {
         public static Arbitrary<Transaction> Transaction()
         {
-            throw new NotImplementedException();
+            var moneyGen = MoneyGenerator.Money().Generator;
 
+            var depositGen = moneyGen.Select(Domain.Transaction.Deposit);
+            var withdrawGen = moneyGen.Select(Domain.Transaction.Withdraw);
+            var gen = Gen.OneOf(depositGen, withdrawGen);
+
+            return Arb.From(gen);
         }
     }
-
 }

@@ -1,24 +1,26 @@
 ﻿using FsCheck;
 using FsCheck.Fluent;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WalletPropertyTesting.Tests.Arbitraries
 {
     public enum WalletOpType { Deposit, Withdraw }
-
     public record WalletOperation(WalletOpType Type, decimal Amount);
 
     public static class OperationGenerator
     {
         public static Arbitrary<WalletOperation> Operation()
         {
-            throw new NotImplementedException();
+            var amountGen = Gen.Choose(1, 1000) 
+                               .Select(x => (decimal)x);
 
+            var typeGen = Gen.Elements(WalletOpType.Deposit, WalletOpType.Withdraw);
+
+            var gen = from amount in amountGen
+                      from type in typeGen
+                      select new WalletOperation(type, amount);
+
+            return Arb.From(gen);
         }
     }
-
 }
